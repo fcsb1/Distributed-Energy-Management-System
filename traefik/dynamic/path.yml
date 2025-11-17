@@ -1,0 +1,131 @@
+http:
+  middlewares:
+    cors-header:
+      headers:
+        accessControlAllowOriginList:
+          - "http://localhost:80"
+          - "http://localhost"
+        accessControlAllowMethods:
+          - "GET"
+          - "POST"
+          - "PUT"
+          - "DELETE"
+          - "OPTIONS"
+        accessControlAllowHeaders:
+          - "Content-Type"
+          - "Authorization"
+          - "X-Requested-With"
+          - "Accept"
+        accessControlAllowCredentials: true
+        addVaryHeader: true
+        accessControlMaxAge: 3600
+
+    #ForwardAuth middleware
+    # This points to auth-service's validation endpoint
+    auth-validate:
+      forwardAuth:
+        address: "http://auth-service:8081/api/auth/validate"
+        authRequestHeaders:
+          - "Authorization" # Tells Traefik to forward the JWT header to the auth service
+
+    #Middlewares to add the Role headers
+    auth-admin-headers:
+      headers:
+        customRequestHeaders:
+          X-Required-Role: "ROLE_ADMIN"
+
+    auth-client-headers:
+      headers:
+        customRequestHeaders:
+          X-Required-Role: "ROLE_CLIENT"
+
+    #chains to combine headers, auth, and CORS
+    chain-admin-only:
+      chain:
+        middlewares:
+          - auth-admin-headers
+          - auth-validate
+          - cors-header
+          
+    chain-client-only:
+      chain:
+        middlewares:
+          - auth-client-headers
+          - auth-validate
+          - cors-header
+
+  routers:
+    # Public Routes 
+
+    frontend-router:
+      rule: "Host(`localhost`) && PathPrefix(`/`)"
+      entryPoints:
+        - web
+      service: frontend-service
+      priority: 1 
+
+    auth-router:
+      rule: "Host(`localhost`) && PathPrefix(`/api/auth`)"
+      entryPoints:
+        - web
+      middlewares:
+        - cors-header # Login only CORS
+      service: auth-service-api
+      priority: 10 
+
+
+    # Protected Admin Routes 
+    users-admin-router:
+      rule: "Host(`localhost`) && PathPrefix(`/users`)"
+      entryPoints:
+        - web
+      middlewares:
+        - chain-admin-only # Apply Admin+Auth+CORS chain
+      service: user-service-api
+      priority: 10
+
+    devices-admin-router:
+      rule: "Host(`localhost`) && PathPrefix(`/devices`)"
+      entryPoints:
+        - web
+      middlewares:
+        - chain-admin-only # Apply Admin+Auth+CORS chain
+      service: device-service-api
+      priority: 10 # 
+
+
+    # Protected Client Routes 
+    devices-client-router:
+      rule: "Host(`localhost`) && PathPrefix(`/devices/user`)"
+      entryPoints:
+        - web
+      middlewares:
+        - chain-client-only # Apply Client+Auth+CORS chain
+      service: device-service-api
+      priority: 11 
+
+#services
+  services:
+    frontend-service:
+      loadBalancer:
+        servers:
+          - url: "http://frontend:80"
+        passHostHeader: true
+
+    auth-service-api:
+      loadBalancer:
+        servers:
+          - url: "http://auth-service:8081"
+        passHostHeader: true
+
+    user-service-api:
+      loadBalancer:
+        servers:
+          - url: "http://user-service:8082"
+        passHostHeader: true
+
+    device-service-api:
+      loadBalancer:
+        servers:
+          - url: "http://device-service:8083"
+        passHostHeader: true

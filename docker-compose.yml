@@ -1,0 +1,144 @@
+#version: '3.9'
+
+services:
+  # 1. The API Gateway
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik
+    restart: always
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./traefik/traefik.yml:/etc/traefik/traefik.yml:ro"
+      - "./traefik/dynamic/path.yml:/etc/traefik/dynamic/path.yml:ro"
+    networks:
+      - proxy-network
+
+  # 2.Credential Service Database
+  postgres-credential-db:
+    image: postgres:16-alpine
+    container_name: postgres-credential-db
+    restart: always
+    environment:
+      POSTGRES_DB: credential_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - credential-db-data:/var/lib/postgresql/data 
+    networks:
+      - proxy-network
+
+  # 3. User Service Database
+  postgres-user-db:
+    image: postgres:16-alpine
+    container_name: postgres-user-db
+    restart: always
+    environment:
+      POSTGRES_DB: user_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - user-db-data:/var/lib/postgresql/data
+    networks:
+      - proxy-network
+
+  # 4. Device Service Database
+  postgres-device-db:
+    image: postgres:16-alpine
+    container_name: postgres-device-db
+    restart: always
+    environment:
+      POSTGRES_DB: device_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - device-db-data:/var/lib/postgresql/data
+    networks:
+      - proxy-network
+
+  # 5. Auth Service Microservice
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    restart: always
+    environment:
+      DB_IP: postgres-credential-db 
+      DB_PORT: 5432
+      DB_DBNAME: credential_db
+      DB_USER: postgres
+      DB_PASSWORD: 1234
+    networks:
+      - proxy-network
+    depends_on:
+      - postgres-credential-db
+    ports:
+      - "8081:8081"
+
+  # 6. User Service Microservice
+  user-service:
+   build:
+       context: ./user-service
+       dockerfile: Dockerfile
+   container_name: user-service
+   restart: always
+   environment:
+      DB_IP: postgres-user-db 
+      DB_PORT: 5432
+      DB_DBNAME: user_db
+      DB_USER: postgres
+      DB_PASSWORD: 1234
+     
+      SERVICE_URL_AUTH: http://auth-service:8081/api/auth  # Docker DNS name
+      SERVICE_URL_DEVICE: http://device-service:8083 # Docker DNS name
+   networks:
+     - proxy-network
+   depends_on:
+      - postgres-user-db
+   ports:
+    - "8082:8082"
+
+  # 7. Device Service Microservice
+  device-service:
+    build:
+      context: ./device-service
+      dockerfile: Dockerfile
+    container_name: device-service
+    restart: always
+    environment:
+      DB_IP: postgres-device-db 
+      DB_PORT: 5432
+      DB_DBNAME: device_db
+      DB_USER: postgres
+      DB_PASSWORD: 1234
+    networks:
+      - proxy-network
+    depends_on:
+      - postgres-device-db
+    ports:
+      - "8083:8083"
+
+  # 8. React Frontend Service
+  frontend:
+    build:
+      context: ./react-demo-hooks
+      dockerfile: Dockerfile
+    container_name: frontend
+    restart: always
+    networks:
+      - proxy-network
+    depends_on:
+      - traefik
+      - auth-service 
+
+networks:
+  proxy-network:
+    driver: bridge
+
+volumes:
+  credential-db-data: 
+  user-db-data:
+  device-db-data:
