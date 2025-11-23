@@ -16,7 +16,7 @@ services:
     networks:
       - proxy-network
 
-  # 2.Credential Service Database
+  # 2. Credential Service Database
   postgres-credential-db:
     image: postgres:16-alpine
     container_name: postgres-credential-db
@@ -58,7 +58,40 @@ services:
     networks:
       - proxy-network
 
-  # 5. Auth Service Microservice
+  # 5. Monitoring Service Database (NEW)
+  postgres-monitoring-db:
+    image: postgres:16-alpine
+    container_name: postgres-monitoring-db
+    restart: always
+    environment:
+      POSTGRES_DB: monitoring_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - monitoring-db-data:/var/lib/postgresql/data
+    networks:
+      - proxy-network
+
+  # 6. RabbitMQ Message Broker (NEW)
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"   # AMQP protocol port
+      - "15672:15672" # Management UI port
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - proxy-network
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 7. Auth Service Microservice
   auth-service:
     build:
       context: ./auth-service
@@ -78,7 +111,7 @@ services:
     ports:
       - "8081:8081"
 
-  # 6. User Service Microservice
+  # 8. User Service Microservice
   user-service:
    build:
        context: ./user-service
@@ -92,8 +125,8 @@ services:
       DB_USER: postgres
       DB_PASSWORD: 1234
      
-      SERVICE_URL_AUTH: http://auth-service:8081/api/auth  # Docker DNS name
-      SERVICE_URL_DEVICE: http://device-service:8083 # Docker DNS name
+      SERVICE_URL_AUTH: http://auth-service:8081/api/auth
+      SERVICE_URL_DEVICE: http://device-service:8083
    networks:
      - proxy-network
    depends_on:
@@ -101,7 +134,7 @@ services:
    ports:
     - "8082:8082"
 
-  # 7. Device Service Microservice
+  # 9. Device Service Microservice
   device-service:
     build:
       context: ./device-service
@@ -114,6 +147,13 @@ services:
       DB_DBNAME: device_db
       DB_USER: postgres
       DB_PASSWORD: 1234
+
+      # RabbitMQ configuration (NEW)
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      
     networks:
       - proxy-network
     depends_on:
@@ -121,7 +161,35 @@ services:
     ports:
       - "8083:8083"
 
-  # 8. React Frontend Service
+  # 10. Monitoring Service Microservice (NEW)
+  monitoring-service:
+    build:
+      context: ./monitoring-service
+      dockerfile: Dockerfile
+    container_name: monitoring-service
+    restart: always
+    environment:
+      DB_IP: postgres-monitoring-db 
+      DB_PORT: 5432
+      DB_DBNAME: monitoring_db
+      DB_USER: postgres
+      DB_PASSWORD: 1234
+      
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+    networks:
+      - proxy-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres-monitoring-db:
+        condition: service_started
+    ports:
+      - "8084:8084"
+
+  # 11. React Frontend Service
   frontend:
     build:
       context: ./react-demo-hooks
@@ -142,3 +210,4 @@ volumes:
   credential-db-data: 
   user-db-data:
   device-db-data:
+  monitoring-db-data:  # NEW

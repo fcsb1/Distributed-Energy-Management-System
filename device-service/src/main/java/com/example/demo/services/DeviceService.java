@@ -25,10 +25,13 @@ public class DeviceService {
     private final DeviceRepository deviceRepository;
     private final UserMappingRepository userMappingRepository;
 
+    private final DeviceSyncPublisher deviceSyncPublisher; // NEW
+
     @Autowired
-    public DeviceService(DeviceRepository deviceRepository, UserMappingRepository userMappingRepository) {
+    public DeviceService(DeviceRepository deviceRepository, UserMappingRepository userMappingRepository,DeviceSyncPublisher deviceSyncPublisher) {
         this.deviceRepository = deviceRepository;
         this.userMappingRepository = userMappingRepository;
+        this.deviceSyncPublisher = deviceSyncPublisher;
     }
 
     //UserMapping Sync Methods
@@ -86,6 +89,10 @@ public class DeviceService {
 
         device = deviceRepository.save(device);
         LOGGER.debug("Device with id {} was inserted in db", device.getId());
+
+        // NEW: Publish sync event to RabbitMQ
+        deviceSyncPublisher.publishDeviceCreated(device.getId());
+
         return device.getId();
     }
 
@@ -116,5 +123,7 @@ public class DeviceService {
         }
         deviceRepository.deleteById(id);
         LOGGER.debug("Device with id {} was deleted from db", id);
+        // NEW: Publish sync event to RabbitMQ
+        deviceSyncPublisher.publishDeviceDeleted(id);
     }
 }

@@ -91,10 +91,22 @@ http:
       middlewares:
         - chain-admin-only # Apply Admin+Auth+CORS chain
       service: device-service-api
-      priority: 10 # 
+      priority: 10 
+
 
 
     # Protected Client Routes 
+    
+    monitoring-client-router: # NEW: Monitoring Routes (Client access)
+      rule: "Host(`localhost`) && PathPrefix(`/monitoring`)"
+      entryPoints:
+        - web
+      middlewares:
+        - chain-client-only
+      service: monitoring-service-api
+      priority: 11
+
+
     devices-client-router:
       rule: "Host(`localhost`) && PathPrefix(`/devices/user`)"
       entryPoints:
@@ -106,6 +118,14 @@ http:
 
 #services
   services:
+
+    # NEW: Monitoring service
+    monitoring-service-api:
+      loadBalancer:
+        servers:
+          - url: "http://monitoring-service:8084"
+        passHostHeader: true
+
     frontend-service:
       loadBalancer:
         servers:
