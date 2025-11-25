@@ -91,7 +91,7 @@ public class DeviceService {
         LOGGER.debug("Device with id {} was inserted in db", device.getId());
 
         // NEW: Publish sync event to RabbitMQ
-        deviceSyncPublisher.publishDeviceCreated(device.getId());
+        deviceSyncPublisher.publishDeviceEvent("CREATED",device.getId());
 
         return device.getId();
     }
@@ -124,6 +124,6 @@ public class DeviceService {
         deviceRepository.deleteById(id);
         LOGGER.debug("Device with id {} was deleted from db", id);
         // NEW: Publish sync event to RabbitMQ
-        deviceSyncPublisher.publishDeviceDeleted(id);
+        deviceSyncPublisher.publishDeviceEvent("DELETED",id);
     }
 }
