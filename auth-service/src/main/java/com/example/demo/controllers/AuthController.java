@@ -36,32 +36,6 @@ public class AuthController {
     }
 
 
-    // This will be called by user-service
-    @Operation(summary = "Register user credentials", description = "Creates credentials for new user")
-    @ApiResponse(responseCode = "200", description = "Credentials created")
-    @PostMapping("/register") // Internal: /api/auth/register
-    public ResponseEntity<UUID> register(@Valid @RequestBody RegisterDTO registerDTO) {
-        UUID id = authService.register(registerDTO);
-        return ResponseEntity.ok(id);
-    }
-
-    @Operation(summary = "Update user credentials", description = "Updates existing user credentials")
-    @ApiResponse(responseCode = "200", description = "Credentials updated")
-    @PutMapping("/user/{userId}") // Internal: /api/auth/user/{userId}
-    public ResponseEntity<Void> updateCredential(@PathVariable UUID userId, @Valid @RequestBody RegisterDTO registerDTO) {
-        authService.updateCredential(userId, registerDTO);
-        return ResponseEntity.ok().build(); // 200 OK
-    }
-
-    // This is for syncing deletes
-    @Operation(summary = "Delete user credentials", description = "Deletes user credentials")
-    @ApiResponse(responseCode = "204", description = "Credentials deleted")
-    @DeleteMapping("/user/{userId}") // Internal: /api/auth/user/{userId}
-    public ResponseEntity<Void> deleteCredential(@PathVariable UUID userId) {
-        authService.deleteCredential(userId);
-        return ResponseEntity.noContent().build();
-    }
-
     // This is the endpoint for Traefik Forward Auth
     @Operation(summary = "Validate JWT token", description = "Validates token and checks role")
     @ApiResponse(responseCode = "200", description = "Token valid")

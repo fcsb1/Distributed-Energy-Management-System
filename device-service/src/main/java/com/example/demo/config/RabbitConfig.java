@@ -25,13 +25,13 @@ public class RabbitConfig {
         return new TopicExchange(EXCHANGE_NAME);
     }
     // Existing device sync queue
-    @Value("${app.queue.device-sync}")
-    private String deviceSyncQueueName;
+   // @Value("${app.queue.device-sync}")
+    //private String deviceSyncQueueName;
 
-    @Bean
-    public Queue deviceSyncQueue() {
-        return new Queue(deviceSyncQueueName, true);
-    }
+   // @Bean
+    //public Queue deviceSyncQueue() {
+     //   return new Queue(deviceSyncQueueName, true);
+    //}
 
     @Bean
     public Queue deviceUserSyncQueue() {

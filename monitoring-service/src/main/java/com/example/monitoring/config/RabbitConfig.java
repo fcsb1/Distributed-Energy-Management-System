@@ -33,8 +33,6 @@ public class RabbitConfig {
         return new Queue(sensorDataQueueName, true);
     }
 
-
-
     @Bean
     public Queue monitoringDeviceSyncQueue() {
         return new Queue("monitoring.device.sync.queue", true);

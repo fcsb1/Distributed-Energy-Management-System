@@ -82,24 +82,4 @@ public class DeviceController {
     public ResponseEntity<List<DeviceDTO>> getDevicesByUserId(@PathVariable UUID userId) {
         return ResponseEntity.ok(deviceService.findDevicesByUserId(userId));
     }
-
-
-    //Endpoints for user-service to sync User IDs
-    // Called by user-service when a new user is created
-    @Operation(summary = "Create user mapping", description = "Creates user mapping")
-    @ApiResponse(responseCode = "201", description = "Mapping created")
-    @PostMapping("/users/{userId}")
-    public ResponseEntity<Void> createUserMapping(@PathVariable UUID userId) {
-        deviceService.createUserMapping(userId);
-        return ResponseEntity.status(201).build();
-    }
-
-    // Called by user-service when a user is deleted
-    @Operation(summary = "Delete user mapping", description = "Deletes user mapping")
-    @ApiResponse(responseCode = "204", description = "Mapping deleted")
-    @DeleteMapping("/users/{userId}")
-    public ResponseEntity<Void> deleteUserMapping(@PathVariable UUID userId) {
-        deviceService.deleteUserMapping(userId);
-        return ResponseEntity.noContent().build();
-    }
 }
