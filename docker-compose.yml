@@ -199,8 +199,8 @@ services:
         condition: service_healthy
       postgres-monitoring-db:
         condition: service_started
-    ports:
-      - "8084:8084"
+    #ports:
+     # - "8084:8084"
 
   # 11. React Frontend Service
   frontend:

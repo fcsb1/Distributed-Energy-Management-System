@@ -26,7 +26,6 @@ public class UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
     private final UserRepository userRepository;
 
-    // Replace RestTemplate with RabbitTemplate
     private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
 
@@ -85,7 +84,7 @@ public class UserService {
         userRepository.deleteById(id);
 
         // Sync: Send message to RabbitMQ
-        // For delete, we only need the ID
+
         UserDetailsDTO dummyDto = new UserDetailsDTO();
         sendUserEvent("DELETED", id, dummyDto);
     }
@@ -96,8 +95,8 @@ public class UserService {
             messageMap.put("action", action);
             messageMap.put("userId", userId.toString());
             messageMap.put("username", dto.getUsername());
-            messageMap.put("password", dto.getPassword()); // Only needed for Auth Service
-            messageMap.put("role", dto.getRole());         // Only needed for Auth Service
+            messageMap.put("password", dto.getPassword());
+            messageMap.put("role", dto.getRole());
 
             String jsonMessage = objectMapper.writeValueAsString(messageMap);
 
@@ -108,7 +107,7 @@ public class UserService {
             LOGGER.info("Sent user sync event: {}", routingKey);
         } catch (Exception e) {
             LOGGER.error("Failed to send user sync event", e);
-            // In a real system, you might want to throw an exception or save to an outbox table
+
         }
     }
 }

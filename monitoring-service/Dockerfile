@@ -25,8 +25,5 @@ WORKDIR /app
 # Copy  the built .jar lile from the "builder"" stage
 COPY --from=builder /app/target/*.jar app.jar
 
-# expose the port from application.properties
-EXPOSE 8084
-
 # command to run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]

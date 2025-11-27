@@ -1,4 +1,4 @@
-package com.example.demo.config; // Check package name per service
+package com.example.demo.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.amqp.core.*;
@@ -15,12 +15,10 @@ public class RabbitConfig {
 
     public static final String EXCHANGE_NAME = "system.exchange";
 
-    // 1. Define the Topic Exchange (Required in ALL services)
     @Bean
     public TopicExchange systemExchange() {
         return new TopicExchange(EXCHANGE_NAME);
     }
-    // ... existing exchange bean from Step 1 ...
 
     @Bean
     public Queue authUserSyncQueue() {
@@ -33,6 +31,4 @@ public class RabbitConfig {
         return BindingBuilder.bind(authUserSyncQueue).to(systemExchange).with("user.event.#");
     }
 
-    // Note: The Queues and Bindings will be specific to the CONSUMER services
-    // (Auth, Device, Monitoring) in the steps below.
 }

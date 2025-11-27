@@ -25,10 +25,10 @@ public class UserSyncConsumer {
     @RabbitListener(queues = "auth.user.sync.queue")
     public void handleSyncMessage(String messageJson) {
         try {
-            // 1. Manually convert String to Map
+            // 1 Manually convert String to Map
             Map<String, Object> map = objectMapper.readValue(messageJson, Map.class);
 
-            // 2. Extract values manually
+            // 2Extract values manually
             String action = (String) map.get("action");
             String userIdStr = (String) map.get("userId");
             String username = (String) map.get("username");

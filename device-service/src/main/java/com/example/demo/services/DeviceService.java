@@ -25,7 +25,7 @@ public class DeviceService {
     private final DeviceRepository deviceRepository;
     private final UserMappingRepository userMappingRepository;
 
-    private final DeviceSyncPublisher deviceSyncPublisher; // NEW
+    private final DeviceSyncPublisher deviceSyncPublisher;
 
     @Autowired
     public DeviceService(DeviceRepository deviceRepository, UserMappingRepository userMappingRepository,DeviceSyncPublisher deviceSyncPublisher) {
@@ -123,7 +123,7 @@ public class DeviceService {
         }
         deviceRepository.deleteById(id);
         LOGGER.debug("Device with id {} was deleted from db", id);
-        // NEW: Publish sync event to RabbitMQ
+        //Publish sync event to RabbitMQ
         deviceSyncPublisher.publishDeviceEvent("DELETED",id);
     }
 }

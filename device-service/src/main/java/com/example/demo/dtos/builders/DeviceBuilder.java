@@ -1,7 +1,6 @@
 package com.example.demo.dtos.builders;
 
 import com.example.demo.dtos.DeviceDTO;
-import com.example.demo.dtos.DeviceDetailsDTO;
 import com.example.demo.entities.Device;
 
 public class DeviceBuilder {

@@ -24,10 +24,10 @@ public class UserSyncConsumer {
     @RabbitListener(queues = "device.user.sync.queue")
     public void handleSyncMessage(String messageJson) {
         try {
-            // 1. String to Map
+            // 1String to Map
             Map<String, Object> map = objectMapper.readValue(messageJson, Map.class);
 
-            // 2. Extract values
+            // 2Extract values
             String action = (String) map.get("action");
             String userIdStr = (String) map.get("userId");
             UUID userId = UUID.fromString(userIdStr);

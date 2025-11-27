@@ -88,4 +88,4 @@ function LoginPage(props) { // Receive props
     );
 }
 
-export default withRouter(LoginPage); // Wrap component with withRouter
+export default withRouter(LoginPage);

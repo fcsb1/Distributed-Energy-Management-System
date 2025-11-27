@@ -1,5 +1,5 @@
 import { HOST } from '../commons/hosts';
-import performRequest  from "../commons/api/rest-client"; // Corrected import
+import performRequest  from "../commons/api/rest-client";
 
 const endpoint = {
     login: '/api/auth/login'

@@ -25,7 +25,6 @@ public class MonitoringService {
 
     /**
      * Get hourly consumption data for a device on a specific date.
-     * Used by frontend to display charts.
      */
     public List<HourlyConsumptionDTO> getHourlyConsumptionByDeviceAndDate(UUID deviceId, LocalDate date) {
         LOGGER.debug("Fetching hourly consumption for deviceId={}, date={}", deviceId, date);

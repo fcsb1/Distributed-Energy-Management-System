@@ -30,7 +30,7 @@ public class DataGeneratorService {
     @Value("${simulator.device-id}")
     private String deviceId;
 
-    // Inject the new boolean variable
+
     @Value("${simulator.fast-demo:false}")
     private boolean fastDemo;
 
@@ -45,20 +45,14 @@ public class DataGeneratorService {
         this.currentSimulatedTime = LocalDateTime.now();
     }
 
-    /**
-     * Case 1: FAST DEMO = TRUE
-     * Runs every 5000ms (5 seconds)
-     */
+
     @Scheduled(fixedRate = 5000)
     @ConditionalOnProperty(name = "simulator.fast-demo", havingValue = "true")
     public void scheduleFast() {
         processAndSend();
     }
 
-    /**
-     * Case 2: FAST DEMO = FALSE (or missing)
-     * Runs every 600000ms (10 minutes)
-     */
+
     @Scheduled(fixedRate = 600000)
     @ConditionalOnProperty(name = "simulator.fast-demo", havingValue = "false", matchIfMissing = true)
     public void scheduleNormal() {
@@ -68,12 +62,12 @@ public class DataGeneratorService {
 
     private void processAndSend() {
         try {
-            // Time Logic
+
             if (fastDemo) {
-                // In fast mode, we artificially advance time by 10 minutes every execution
+
                 currentSimulatedTime = currentSimulatedTime.plusMinutes(10);
             } else {
-                // In normal mode, we just sync with real system time (which advances naturally)
+
                 currentSimulatedTime = LocalDateTime.now();
             }
 
@@ -98,8 +92,7 @@ public class DataGeneratorService {
     }
 
     /**
-     * Generate realistic energy consumption based on time of day.
-     * Patterns:
+
      * - Night (0-6): Low consumption (0.1 - 0.5 kWh)
      * - Morning (6-9): Rising consumption (0.5 - 1.5 kWh)
      * - Day (9-17): Medium consumption (0.8 - 1.2 kWh)

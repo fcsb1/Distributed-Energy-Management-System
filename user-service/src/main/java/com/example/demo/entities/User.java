@@ -29,7 +29,7 @@ public class User implements Serializable {
         this.username = username;
     }
 
-    // Getters and Setters
+    // Gtters and Setters
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
 

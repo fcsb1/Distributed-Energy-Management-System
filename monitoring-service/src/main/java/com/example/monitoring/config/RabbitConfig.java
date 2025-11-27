@@ -18,7 +18,6 @@ public class RabbitConfig {
 
     public static final String EXCHANGE_NAME = "system.exchange";
 
-    // 1. Define the Topic Exchange (Required in ALL services)
     @Bean
     public TopicExchange systemExchange() {
         return new TopicExchange(EXCHANGE_NAME);
@@ -29,7 +28,7 @@ public class RabbitConfig {
 
     @Bean
     public Queue sensorDataQueue() {
-        // durable = true means queue survives broker restart
+
         return new Queue(sensorDataQueueName, true);
     }
 

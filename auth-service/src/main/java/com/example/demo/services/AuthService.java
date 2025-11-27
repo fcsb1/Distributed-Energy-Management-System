@@ -49,7 +49,7 @@ public class AuthService {
         return new LoginResponseDTO(token);
     }
 
-    // New "Register" method as required by a1.pdf
+
     public UUID register(RegisterDTO registerDTO) {
         credentialRepository.findByUsername(registerDTO.getUsername()).ifPresent(u -> {
             throw new DataIntegrityViolationException("Username '" + registerDTO.getUsername() + "' is already taken.");
@@ -98,7 +98,7 @@ public class AuthService {
         LOGGER.info("Credential updated for user ID: {}", userId);
     }
 
-    // New "Delete" method for syncing with user-service
+    // method for syncing with user-service
     @Transactional
     public void deleteCredential(UUID userId) {
         if (!credentialRepository.existsByUserId(userId)) {
@@ -109,12 +109,12 @@ public class AuthService {
         LOGGER.info("Credential deleted for user ID: {}", userId);
     }
 
-    // New "Validate Token" method
+
     public boolean validate(String token) {
         return jwtUtil.validateToken(token);
     }
 
-    // New "Validate Role" method
+
     public boolean validateRole(String token, String requiredRole) {
         if (!validate(token)) {
             return false;

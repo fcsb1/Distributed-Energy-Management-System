@@ -2,7 +2,6 @@ package com.example.demo.controllers;
 
 import com.example.demo.dtos.LoginRequestDTO;
 import com.example.demo.dtos.LoginResponseDTO;
-import com.example.demo.dtos.RegisterDTO;
 import com.example.demo.services.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -11,13 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @RestController
-@RequestMapping("/api/auth") // Using a base path
+@RequestMapping("/api/auth")
 @Validated
 public class AuthController {
 
@@ -29,7 +26,7 @@ public class AuthController {
 
     @Operation(summary = "User login", description = "Authenticates user and returns JWT token")
     @ApiResponse(responseCode = "200", description = "Login successful")
-    @PostMapping("/login") // Public: /api/auth/login
+    @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
         LoginResponseDTO response = authService.login(loginRequest);
         return ResponseEntity.ok(response);

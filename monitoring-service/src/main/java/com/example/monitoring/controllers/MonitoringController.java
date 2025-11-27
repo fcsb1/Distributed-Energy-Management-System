@@ -21,9 +21,6 @@ public class MonitoringController {
     }
 
     /**
-     * Get hourly energy consumption for a device on a specific date.
-     * Frontend will use this to render line/bar charts.
-     *
      * Example: GET /monitoring/device/{deviceId}/consumption?date=2025-01-15
      */
     @GetMapping("/device/{deviceId}/consumption")

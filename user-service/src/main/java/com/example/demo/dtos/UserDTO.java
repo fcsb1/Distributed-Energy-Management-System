@@ -13,7 +13,7 @@ public class UserDTO {
         this.username = username;
     }
 
-    // Getters and Setters
+    //etters and Setters
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
 

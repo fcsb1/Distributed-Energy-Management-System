@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Represents a sensor reading to be sent to RabbitMQ.
- * Format matches what monitoring-service expects.
  */
 public class SensorReading {
 
