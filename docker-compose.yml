@@ -58,7 +58,7 @@ services:
     networks:
       - proxy-network
 
-  # 5. Monitoring Service Database (NEW)
+  # 5. Monitoring Service Database
   postgres-monitoring-db:
     image: postgres:16-alpine
     container_name: postgres-monitoring-db
@@ -72,7 +72,7 @@ services:
     networks:
       - proxy-network
 
-  # 6. RabbitMQ Message Broker (NEW)
+  # 6. RabbitMQ Message Broker
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
     container_name: rabbitmq
@@ -161,7 +161,7 @@ services:
       DB_USER: postgres
       DB_PASSWORD: 1234
 
-      # RabbitMQ configuration (NEW)
+      # RabbitMQ configuration
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
       RABBITMQ_USER: guest
@@ -174,7 +174,7 @@ services:
     ports:
       - "8083:8083"
 
-  # 10. Monitoring Service Microservice (NEW)
+  # 10. Monitoring Service Microservice
   monitoring-service:
     build:
       context: ./monitoring-service
@@ -199,8 +199,6 @@ services:
         condition: service_healthy
       postgres-monitoring-db:
         condition: service_started
-    #ports:
-     # - "8084:8084"
 
   # 11. React Frontend Service
   frontend:
@@ -223,4 +221,4 @@ volumes:
   credential-db-data: 
   user-db-data:
   device-db-data:
-  monitoring-db-data:  # NEW
+  monitoring-db-data: 

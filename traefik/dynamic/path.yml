@@ -94,10 +94,9 @@ http:
       priority: 10 
 
 
-
     # Protected Client Routes 
     
-    monitoring-client-router: # NEW: Monitoring Routes (Client access)
+    monitoring-client-router: 
       rule: "Host(`localhost`) && PathPrefix(`/monitoring`)"
       entryPoints:
         - web
@@ -119,7 +118,6 @@ http:
 #services
   services:
 
-    # NEW: Monitoring service
     monitoring-service-api:
       loadBalancer:
         servers:
