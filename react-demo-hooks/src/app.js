@@ -10,6 +10,7 @@ import PrivateRoute from './routing/PrivateRoute';
 import UserContainer from './user/User-container';
 import DeviceContainer from './device/DeviceContainer';
 import ClientDeviceContainer from './client/ClientDeviceContainer';
+import AdminChatDashboard from './client/AdminChatDashboard';
 
 function App() {
     return (
@@ -50,6 +51,25 @@ function App() {
                         </PrivateRoute>
 
                         {/* Client Route for Viewing Devices */}
+                        <PrivateRoute
+                            exact
+                            path='/client/devices'
+                            role="ROLE_CLIENT"
+                        >
+                            <ClientDeviceContainer />
+                        </PrivateRoute>
+
+                        {/* Admin Route for Chat Dashboard */}
+                        <PrivateRoute
+                            exact
+                            path='/admin/chat'
+                            role="ROLE_ADMIN"
+                        >
+                            <AdminChatDashboard />
+                        </PrivateRoute>
+
+
+                        {/* Client Route for Viewing Devices and Chat */}
                         <PrivateRoute
                             exact
                             path='/client/devices'

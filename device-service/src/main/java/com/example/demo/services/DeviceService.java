@@ -90,7 +90,7 @@ public class DeviceService {
         device = deviceRepository.save(device);
         LOGGER.debug("Device with id {} was inserted in db", device.getId());
 
-        // NEW: Publish sync event to RabbitMQ
+        // Publish sync event to RabbitMQ
         deviceSyncPublisher.publishDeviceEvent("CREATED",device.getId());
 
         return device.getId();

@@ -200,7 +200,33 @@ services:
       postgres-monitoring-db:
         condition: service_started
 
-  # 11. React Frontend Service
+
+
+
+  # 11. Chat Service Microservice
+  chat-service:
+    build:
+      context: ./chat-service
+      dockerfile: Dockerfile
+    container_name: chat-service
+    restart: always
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_USER: guest
+      RABBITMQ_PASSWORD: guest
+      
+      # Optional: Add your Gemini API key here
+      GEMINI_API_KEY: AIzaSyD0diEDbXj4T31gqiiU0sqUA_naKJ02f8Y
+    networks:
+      - proxy-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    ports:
+      - "8085:8085"
+
+  # 12. React Frontend Service
   frontend:
     build:
       context: ./react-demo-hooks

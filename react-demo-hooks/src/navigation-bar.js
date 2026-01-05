@@ -41,13 +41,16 @@ function NavigationBar(props) { // Receive props
                                 <DropdownItem>
                                     <NavLink href="/admin/devices">Device Management</NavLink>
                                 </DropdownItem>
+                                <DropdownItem>
+                                    <NavLink href="/admin/chat">Customer Support Chat</NavLink>
+                                </DropdownItem>
                             </DropdownMenu>
                         </UncontrolledDropdown>
                     }
 
                     {/* Client Menu */}
                     {auth.isAuthenticated && auth.user.role === 'ROLE_CLIENT' &&
-                        <NavLink href="/client/devices" style={textStyle}>My Devices</NavLink>
+                        <NavLink href="/client/devices" style={textStyle}>My Devices and Support</NavLink>
                     }
 
                 </Nav>

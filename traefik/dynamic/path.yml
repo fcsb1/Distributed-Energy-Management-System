@@ -74,6 +74,18 @@ http:
       priority: 10 
 
 
+
+# Chat Service - WebSocket (No Auth for simplicity)
+    chat-ws-router:
+      rule: "Host(`localhost`) && PathPrefix(`/ws/chat`)"
+      entryPoints:
+        - web
+      middlewares:
+        - cors-header
+      service: chat-service-api
+      priority: 15
+
+
     # Protected Admin Routes 
     users-admin-router:
       rule: "Host(`localhost`) && PathPrefix(`/users`)"
@@ -146,4 +158,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://device-service:8083"
+        passHostHeader: true
+
+    chat-service-api:
+      loadBalancer:
+        servers:
+          - url: "http://chat-service:8085"
         passHostHeader: true

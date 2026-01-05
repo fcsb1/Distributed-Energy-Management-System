@@ -35,10 +35,10 @@ public class DeviceSyncConsumer {
         try {
             LOGGER.debug("Received device sync message: {}", jsonMessage);
 
-            // 1. Raw String to Map
+            // 1Raw String to Map
             Map<String, Object> map = objectMapper.readValue(jsonMessage, Map.class);
 
-            // 2. Manual Extraction
+            // 2Manual Extraction
             String action = (String) map.get("action");
             String deviceIdStr = (String) map.get("deviceId");
             UUID deviceId = UUID.fromString(deviceIdStr);
