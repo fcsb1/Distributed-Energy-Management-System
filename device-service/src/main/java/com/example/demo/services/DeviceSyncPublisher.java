@@ -23,12 +23,14 @@ public class DeviceSyncPublisher {
         this.objectMapper = objectMapper;
     }
 
-    public void publishDeviceEvent(String action, UUID deviceId) {
+    public void publishDeviceEvent(String action, UUID deviceId,Double maxConsumption, UUID userId) {
         try {
             // Create Map payload
             Map<String, Object> map = new HashMap<>();
             map.put("action", action); // "CREATED" or "DELETED"
             map.put("deviceId", deviceId.toString());
+            map.put("maxConsumption", maxConsumption);
+            map.put("userId", userId != null ? userId.toString() : null);
 
             String jsonMessage = objectMapper.writeValueAsString(map);
 
@@ -37,7 +39,7 @@ public class DeviceSyncPublisher {
 
             rabbitTemplate.convertAndSend(RabbitConfig.EXCHANGE_NAME, routingKey, jsonMessage);
 
-            LOGGER.info("Published device event: {}", routingKey);
+            LOGGER.info("Published device event: {} with maxConsumption: {}", routingKey, maxConsumption);
         } catch (Exception e) {
             LOGGER.error("Failed to publish device event", e);
         }

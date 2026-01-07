@@ -6,7 +6,7 @@ function ChatWidget() {
     const auth = useAuth();
     const [ws, setWs] = useState(null);
 
-    // 1. Separate State for histories
+    // Separate State for histories
     const [botMessages, setBotMessages] = useState([]);
     const [adminMessages, setAdminMessages] = useState([]);
 
@@ -28,10 +28,15 @@ function ChatWidget() {
     }, [botMessages, adminMessages, chatMode]);
 
     useEffect(() => {
-        // 2. Reconnect on mode switch to reset backend routing
+        // Reconnect on mode switch to reset backend routing
         const username = auth.user?.sub || 'Guest';
+        // NEW: Get the ID from the auth user object.
+        // Ensure your LoginResponseDTO or UserDTO includes the 'id' and it is stored in the auth context.
+        const userId = auth.user?.userId || auth.user?.id || 'null';
+
         // Append chatMode to ensure clean state on backend
-        const websocket = new WebSocket(`ws://localhost:8085/ws/chat?userType=client&username=${username}`);
+        // UPDATED: Added userId to the query params
+        const websocket = new WebSocket(`ws://localhost:8085/ws/chat?userType=client&username=${username}&userId=${userId}`);
 
         websocket.onopen = () => {
             console.log('WebSocket Connected');
@@ -52,7 +57,7 @@ function ChatWidget() {
                     setNotification(data.message);
                     setTimeout(() => setNotification(null), 5000);
                 } else if (data.type === 'chat' || data.type === 'system') {
-                    // 3. Route incoming messages to correct history
+                    // Route incoming messages to correct history
                     // If it's from Bot, or we are in bot mode and it's a system msg (like "Welcome")
                     if (data.from === 'Bot' || (data.type === 'system' && chatMode === 'bot')) {
                         setBotMessages(prev => [...prev, data]);
@@ -75,7 +80,7 @@ function ChatWidget() {
         return () => {
             websocket.close();
         };
-    }, [auth.user, chatMode]); // Added chatMode here
+    }, [auth.user, chatMode]);
 
     const sendMessage = () => {
         if (!inputMessage.trim() || !ws) return;
@@ -94,7 +99,7 @@ function ChatWidget() {
             timestamp: new Date().toISOString()
         };
 
-        // 4. Add to local history based on current mode
+        // Add to local history based on current mode
         if (chatMode === 'bot') {
             setBotMessages(prev => [...prev, myMsg]);
         } else {

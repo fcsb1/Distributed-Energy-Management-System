@@ -39,10 +39,11 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String sessionId = session.getId();
 
-        // Extract userType and username from query params
+        // Extract userType, username AND userId from query params
         String query = session.getUri().getQuery();
         String userType = extractParam(query, "userType"); // "client" or "admin"
         String username = extractParam(query, "username");
+        String userId = extractParam(query, "userId"); // NEW: Extract User ID
 
         if (userType == null || username == null) {
             LOGGER.warn("Connection rejected: missing userType or username");
@@ -50,7 +51,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
-        sessionManager.addSession(sessionId, session, userType, username);
+        // Pass userId to the session manager
+        sessionManager.addSession(sessionId, session, userType, username, userId);
 
         // Send welcome message
         ChatMessage welcome = new ChatMessage("system", "server", sessionId,
@@ -67,7 +69,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             sendClientList(session);
         }
 
-        LOGGER.info("WebSocket connection established: {} ({})", sessionId, userType);
+        LOGGER.info("WebSocket connection established: {} ({}) UserID: {}", sessionId, userType, userId);
     }
 
     @Override
@@ -207,24 +209,5 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             }
         }
         return null;
-    }
-
-    // Method to broadcast overconsumption notifications
-    public void broadcastNotification(String deviceId, String deviceName, double current, double max) {
-        String notificationMessage = String.format(
-                "Warning: Device '%s' exceeded max consumption! Current: %.2f kWh, Max: %.2f kWh",
-                deviceName, current, max);
-
-        ChatMessage notification = new ChatMessage("notification", "system", "all", notificationMessage);
-
-        for (WebSocketSession session : sessionManager.getAllSessions()) {
-            if (session.isOpen() && "client".equals(sessionManager.getUserType(session.getId()))) {
-                try {
-                    sendMessage(session, notification);
-                } catch (Exception e) {
-                    LOGGER.error("Error sending notification", e);
-                }
-            }
-        }
     }
 }

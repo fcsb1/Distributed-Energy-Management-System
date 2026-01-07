@@ -38,6 +38,11 @@ public class RabbitConfig {
     }
 
     @Bean
+    public Queue overconsumptionQueue() {
+        return new Queue("overconsumption.notifications", true);
+    }
+
+    @Bean
     public Binding monitoringDeviceBinding(Queue monitoringDeviceSyncQueue, TopicExchange systemExchange) {
         // Monitoring listens to device events
         return BindingBuilder.bind(monitoringDeviceSyncQueue).to(systemExchange).with("device.event.#");

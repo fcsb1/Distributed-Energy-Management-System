@@ -43,9 +43,20 @@ public class DeviceSyncConsumer {
             String deviceIdStr = (String) map.get("deviceId");
             UUID deviceId = UUID.fromString(deviceIdStr);
 
+            String userIdStr = (String) map.get("userId");
+            UUID userId = userIdStr != null ? UUID.fromString(userIdStr) : null;
+
+            Double maxConsumption = 0.0;
+            if (map.containsKey("maxConsumption") && map.get("maxConsumption") != null) {
+                maxConsumption = Double.valueOf(map.get("maxConsumption").toString());
+            }
+
             if ("CREATED".equalsIgnoreCase(action)) {
-                handleDeviceCreated(deviceId);
-            } else if ("DELETED".equalsIgnoreCase(action)) {
+                handleDeviceCreated(deviceId,maxConsumption,userId);
+            } else if("UPDATED".equalsIgnoreCase(action)) {
+                handleDeviceUpdated(deviceId,maxConsumption,userId);
+            }
+            else if ("DELETED".equalsIgnoreCase(action)) {
                 handleDeviceDeleted(deviceId);
             } else {
                 LOGGER.warn("Unknown event action: {}", action);
@@ -56,12 +67,24 @@ public class DeviceSyncConsumer {
         }
     }
 
-    private void handleDeviceCreated(UUID deviceId) {
+    private void handleDeviceCreated(UUID deviceId,Double maxConsumption, UUID userId) {
         if (deviceMappingRepository.existsByDeviceId(deviceId)) {
             return;
         }
-        deviceMappingRepository.save(new DeviceMapping(deviceId));
-        LOGGER.info("Synced: Created device mapping for {}", deviceId);
+        deviceMappingRepository.save(new DeviceMapping(deviceId, maxConsumption, userId));
+        LOGGER.info("Synced: Created device mapping for {} with limit {}", deviceId, maxConsumption);
+    }
+
+    private void handleDeviceUpdated(UUID deviceId, Double maxConsumption, UUID userId) {
+        // Find existing mapping or create a new one if it somehow doesn't exist (Upsert)
+        DeviceMapping mapping = deviceMappingRepository.findById(deviceId)
+                .orElse(new DeviceMapping(deviceId, maxConsumption, userId));
+
+        mapping.setMaxHourlyConsumption(maxConsumption);
+        mapping.setUserId(userId);
+        deviceMappingRepository.save(mapping);
+
+        LOGGER.info("Synced: Updated device mapping for {} with limit {}", deviceId, maxConsumption);
     }
 
     private void handleDeviceDeleted(UUID deviceId) {

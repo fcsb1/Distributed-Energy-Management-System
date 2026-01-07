@@ -91,7 +91,7 @@ public class DeviceService {
         LOGGER.debug("Device with id {} was inserted in db", device.getId());
 
         // Publish sync event to RabbitMQ
-        deviceSyncPublisher.publishDeviceEvent("CREATED",device.getId());
+        deviceSyncPublisher.publishDeviceEvent("CREATED",device.getId(),device.getMaxConsumption(),device.getUserMapping() != null ? device.getUserMapping().getUserId() : null);
 
         return device.getId();
     }
@@ -114,6 +114,9 @@ public class DeviceService {
 
         device = deviceRepository.save(device);
         LOGGER.debug("Device with id {} was updated in db", device.getId());
+
+        deviceSyncPublisher.publishDeviceEvent("UPDATED",device.getId(),device.getMaxConsumption(),device.getUserMapping() != null ? device.getUserMapping().getUserId() : null);
+
         return DeviceBuilder.toDeviceDTO(device);
     }
 
@@ -124,6 +127,6 @@ public class DeviceService {
         deviceRepository.deleteById(id);
         LOGGER.debug("Device with id {} was deleted from db", id);
         //Publish sync event to RabbitMQ
-        deviceSyncPublisher.publishDeviceEvent("DELETED",id);
+        deviceSyncPublisher.publishDeviceEvent("DELETED",id,null,null);
     }
 }

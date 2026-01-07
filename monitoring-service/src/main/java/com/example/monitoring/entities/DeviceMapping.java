@@ -16,19 +16,33 @@ public class DeviceMapping implements Serializable {
     // The ID is the Device ID from the device-service
     @Id
     private UUID deviceId;
+    private Double maxHourlyConsumption;
+    private UUID userId;
 
     public DeviceMapping() {
     }
 
-    public DeviceMapping(UUID deviceId) {
+    public DeviceMapping(UUID deviceId, Double maxHourlyConsumption, UUID userId) {
         this.deviceId = deviceId;
+        this.maxHourlyConsumption = maxHourlyConsumption;
+        this.userId = userId;
 
     }
 
-    // Getters and Setters
-    public UUID getDeviceId() {
-        return deviceId;
+    public UUID getUserId() {
+        return userId;
     }
+
+    public void setUserId(UUID userId) {
+        this.userId = userId;
+    }
+
+    public void setMaxHourlyConsumption(Double maxHourlyConsumption) {
+        this.maxHourlyConsumption = maxHourlyConsumption;
+    }
+
+    public Double getMaxHourlyConsumption() {return maxHourlyConsumption;    }
+    public UUID getDeviceId() {return deviceId;}
     public void setDeviceId(UUID deviceId) {
         this.deviceId = deviceId;
     }

@@ -21,14 +21,30 @@ public class SessionManager {
     // Map: sessionId -> username
     private final Map<String, String> usernames = new ConcurrentHashMap<>();
 
+    // NEW: Map: userId (UUID string) -> sessionId
+    // This allows us to find the session if we know the DB User ID
+    private final Map<String, String> userIdToSessionId = new ConcurrentHashMap<>();
+
+    // NEW: Map: sessionId -> userId (for cleanup)
+    private final Map<String, String> sessionIdToUserId = new ConcurrentHashMap<>();
+
     // Map: clientSessionId -> adminSessionId (active chat connections)
     private final Map<String, String> clientToAdmin = new ConcurrentHashMap<>();
 
-    public void addSession(String sessionId, WebSocketSession session, String userType, String username) {
+    /**
+     * Updated addSession to include userId
+     */
+    public void addSession(String sessionId, WebSocketSession session, String userType, String username, String userId) {
         sessions.put(sessionId, session);
         userTypes.put(sessionId, userType);
         usernames.put(sessionId, username);
-        LOGGER.info("Added {} session: {} ({})", userType, sessionId, username);
+
+        if (userId != null && !userId.equals("null")) {
+            userIdToSessionId.put(userId, sessionId);
+            sessionIdToUserId.put(sessionId, userId);
+        }
+
+        LOGGER.info("Added {} session: {} ({}), UserID: {}", userType, sessionId, username, userId);
     }
 
     public void removeSession(String sessionId) {
@@ -36,6 +52,13 @@ public class SessionManager {
         userTypes.remove(sessionId);
         usernames.remove(sessionId);
         clientToAdmin.remove(sessionId);
+
+        // Remove from the new maps
+        String userId = sessionIdToUserId.remove(sessionId);
+        if (userId != null) {
+            userIdToSessionId.remove(userId);
+        }
+
         // Also remove if this session was an admin for some client
         clientToAdmin.entrySet().removeIf(entry -> entry.getValue().equals(sessionId));
         LOGGER.info("Removed session: {}", sessionId);
@@ -43,6 +66,17 @@ public class SessionManager {
 
     public WebSocketSession getSession(String sessionId) {
         return sessions.get(sessionId);
+    }
+
+    /**
+     * New method to get session by User ID
+     */
+    public WebSocketSession getSessionByUserId(String userId) {
+        String sessionId = userIdToSessionId.get(userId);
+        if (sessionId != null) {
+            return sessions.get(sessionId);
+        }
+        return null;
     }
 
     public String getUserType(String sessionId) {
