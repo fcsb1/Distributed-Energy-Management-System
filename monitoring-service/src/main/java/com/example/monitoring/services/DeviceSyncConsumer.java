@@ -76,7 +76,7 @@ public class DeviceSyncConsumer {
     }
 
     private void handleDeviceUpdated(UUID deviceId, Double maxConsumption, UUID userId) {
-        // Find existing mapping or create a new one if it somehow doesn't exist (Upsert)
+        // Find existing mapping or create a new one if it somehow doesn't exist
         DeviceMapping mapping = deviceMappingRepository.findById(deviceId)
                 .orElse(new DeviceMapping(deviceId, maxConsumption, userId));
 

@@ -21,19 +21,17 @@ public class SessionManager {
     // Map: sessionId -> username
     private final Map<String, String> usernames = new ConcurrentHashMap<>();
 
-    // NEW: Map: userId (UUID string) -> sessionId
+    //Map: userId (UUID string) -> sessionId
     // This allows us to find the session if we know the DB User ID
     private final Map<String, String> userIdToSessionId = new ConcurrentHashMap<>();
 
-    // NEW: Map: sessionId -> userId (for cleanup)
+    // Map: sessionId -> userId (for cleanup)
     private final Map<String, String> sessionIdToUserId = new ConcurrentHashMap<>();
 
-    // Map: clientSessionId -> adminSessionId (active chat connections)
+    // clientSessionId -> adminSessionId (active chat connections)
     private final Map<String, String> clientToAdmin = new ConcurrentHashMap<>();
 
-    /**
-     * Updated addSession to include userId
-     */
+
     public void addSession(String sessionId, WebSocketSession session, String userType, String username, String userId) {
         sessions.put(sessionId, session);
         userTypes.put(sessionId, userType);

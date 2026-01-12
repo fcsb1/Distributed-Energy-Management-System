@@ -75,7 +75,7 @@ http:
 
 
 
-# Chat Service - WebSocket (No Auth for simplicity)
+# Chat Service - WebSocket 
     chat-ws-router:
       rule: "Host(`localhost`) && PathPrefix(`/ws/chat`)"
       entryPoints:

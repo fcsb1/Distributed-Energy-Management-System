@@ -104,11 +104,8 @@ public class SensorDataConsumer {
             if (currentConsumption > limit) {
                 LOGGER.warn("Overconsumption detected for device {}! Current: {}, Max: {}", deviceId, currentConsumption, limit);
 
-                // Create a simple DTO or JSON string for the notification
-                // Matching the structure the ChatService expects (see ChatMessage DTO or specific Notification DTO)
                 try {
                     // Constructing a simple JSON payload for the Chat Service
-                    // The Chat Service listens to "overconsumption.notifications"
                     String userId = device.getUserId() != null ? device.getUserId().toString() : "null";
 
                     String messageJson = String.format(

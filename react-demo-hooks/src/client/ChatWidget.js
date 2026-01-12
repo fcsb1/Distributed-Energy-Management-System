@@ -30,12 +30,10 @@ function ChatWidget() {
     useEffect(() => {
         // Reconnect on mode switch to reset backend routing
         const username = auth.user?.sub || 'Guest';
-        // NEW: Get the ID from the auth user object.
-        // Ensure your LoginResponseDTO or UserDTO includes the 'id' and it is stored in the auth context.
+        //Get the ID from the auth user object.
         const userId = auth.user?.userId || auth.user?.id || 'null';
 
         // Append chatMode to ensure clean state on backend
-        // UPDATED: Added userId to the query params
         const websocket = new WebSocket(`ws://localhost:8085/ws/chat?userType=client&username=${username}&userId=${userId}`);
 
         websocket.onopen = () => {

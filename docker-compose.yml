@@ -216,7 +216,6 @@ services:
       RABBITMQ_USER: guest
       RABBITMQ_PASSWORD: guest
       
-      # Optional: Add your Gemini API key here
       GEMINI_API_KEY: AIzaSyD0diEDbXj4T31gqiiU0sqUA_naKJ02f8Y
     networks:
       - proxy-network

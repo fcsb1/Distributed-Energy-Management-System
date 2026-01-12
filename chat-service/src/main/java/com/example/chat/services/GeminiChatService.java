@@ -58,8 +58,10 @@ public class GeminiChatService {
                 return parseGeminiResponse(response.body());
             } else {
                 LOGGER.error("Gemini API error: {}", response.body());
-                return "I'm having trouble connecting to the AI service. Please try again later.";
-            }
+                return "I'm having trouble connecting to the AI service. Please try again later."; }
+
+
+
 
         } catch (Exception e) {
             LOGGER.error("Error calling Gemini API", e);

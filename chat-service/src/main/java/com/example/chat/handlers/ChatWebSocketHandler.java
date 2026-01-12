@@ -43,7 +43,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         String query = session.getUri().getQuery();
         String userType = extractParam(query, "userType"); // "client" or "admin"
         String username = extractParam(query, "username");
-        String userId = extractParam(query, "userId"); // NEW: Extract User ID
+        String userId = extractParam(query, "userId"); // Extract User ID
 
         if (userType == null || username == null) {
             LOGGER.warn("Connection rejected: missing userType or username");
